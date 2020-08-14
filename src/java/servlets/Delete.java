@@ -5,13 +5,9 @@
  */
 package servlets;
 
-import entity.Gruppyi;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
-import java.util.List;
 import javax.ejb.EJB;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,12 +18,12 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Margarita Shemyakina
  */
-@WebServlet( urlPatterns = {"/studCreate"})
-public class Create extends HttpServlet {
+@WebServlet( urlPatterns = {"/deleteStudent"})
+public class Delete extends HttpServlet {
  @EJB
-           Service.StudentyiService studServ;
-  @EJB
-           Service.GroupInterface grServ;
+           Service.StudentyiService stServ;
+   
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -42,15 +38,11 @@ public class Create extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet StudentCreateServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet StudentCreateServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            String id = (String) request.getParameter("deletedValue");
+        stServ.deleteStudent(Long.valueOf(id));
+        response.sendRedirect(request.getContextPath() + "/studentsTable");
+        
+        
         }
     }
 
@@ -66,12 +58,7 @@ public class Create extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<Gruppyi> grList=null;
-        grList=grServ.getTable();
-        request.setAttribute("grList", grList);
-        RequestDispatcher dispatcher = request.getServletContext()
-                .getRequestDispatcher("/WEB-INF/studCreate.jsp");
-        dispatcher.forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -84,19 +71,8 @@ public class Create extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException { 
-        String NomerZachetki = (String) request.getParameter("NomerZachetki");
-        String Familiya = (String) request.getParameter("Familiya");
-       String Imya = (String) request.getParameter("Imya");
-       String Otchestvo = (String) request.getParameter("Otchestvo");
-        String Gorod = (String) request.getParameter("Gorod");
-        String Gruppyi = (String) request.getParameter("Gruppyi");
-        String Adres = (String) request.getParameter("Adres");
-        String Tel = (String) request.getParameter("Tel");
-        String Status = (String) request.getParameter("Status");
-        studServ.createStudent(Long.valueOf(NomerZachetki), Integer.valueOf(Gruppyi), Familiya, Imya, Otchestvo, Gorod, Adres, Tel, Status,new Date());
-        response.sendRedirect(request.getContextPath() + "/studentsTable");
-        
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
 
     /**
